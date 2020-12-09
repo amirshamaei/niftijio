@@ -1,25 +1,20 @@
-niftijio
+niftijio-ndArray version
 ========
 
-This project is a Java library for reading and writing NIfTI image volumes.
-This includes support for header metadata, various datatypes, and multichannel
-volumes.  When a volume is read from a file, the image intensities are stored
-in a four-dimensional double array.  The array indices match the order in the
-'dim' array of the header.
+I forked this repository from niftijio, which is a Java library for reading and writing NIfTI-1 image volumes which is limited to .
 
-A jar can be built using Maven by executing 'mvn package'.
+new features:
++ Support of 7-dimension data
++ Support of Complex 128
++ New example contais downloading, reading and rewriting a simple image time-series in gzipped single file nifti-1 form
++ Develop index iterator tool for iterating over shape of a matrix
++ allowing arbitarary dim shape
 
-The file format specification can be found here:
+To-do:
++ testing more data sets(both MRI and MRS(I); If you have datsets, specially image data with higher dimension(+4), please contact me)
++ adding deafult datatype like nibabel
++ adding random access feature for large volume(ongoing)
++ add multi-dimension java array in once to data.(find a way for increasing the spead)
 
-http://nifti.nimh.nih.gov/nifti-1
-
-The code for reading the header was derived from the following implementation:
-
-http://niftilib.sourceforge.net
-
-The code for little-endian streams is provided by Roedy Green:
-
-http://mindprod.com/jgloss/endian.html
-
-This is released under the MIT license.  Any comments can be directed to Ryan
-Cabeen at cabeen@gmail.com
+License:
+As the niftijio, this is also released under the MIT license.  feel free to create issues, report bug and contact the developer via amirshamaei@isibrno.cz.

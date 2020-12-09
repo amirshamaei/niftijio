@@ -2,7 +2,7 @@ package com.ericbarnhill.niftijio;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-
+@Deprecated
 public class Example
 {
     public static void main(String[] args)

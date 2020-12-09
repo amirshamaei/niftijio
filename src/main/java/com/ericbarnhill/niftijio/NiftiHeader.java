@@ -1,22 +1,9 @@
 package com.ericbarnhill.niftijio;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
-import java.util.Date;
-import java.util.List;
 
 public class NiftiHeader
 {
@@ -155,16 +142,53 @@ public class NiftiHeader
     public StringBuffer magic;
     public byte extension[];
 
+
+
     public NiftiHeader()
     {
         setDefaults();
     }
-
+    public NiftiHeader(int[] dims)
+    {
+        setDefaults();
+        this.filename = "";
+        this.pixdim[0] = 1.0f;
+        this.pixdim[1] = 1.0f;
+        this.pixdim[2] = 1.0f;
+        this.srow_x[0] = 1.0f;
+        this.srow_y[1] = 1.0f;
+        this.srow_z[2] = 1.0f;
+        this.descrip = new StringBuffer("Created: " + new Date().toString());
+        this.setDatatype(NIFTI_TYPE_FLOAT32);
+        this.dim[0] = (short) (dims.length > 1 ? dims.length : 3);
+        this.dim[1] = (short) dims[0];
+        this.dim[2] = (short) dims[1];
+        this.dim[3] = (short) dims[2];
+        try {
+            this.dim[4] = (short) (dims[3] > 1 ? dims[3] : 0);
+        } catch (Exception e) {
+            this.dim[4] = 0;
+        }
+        try {
+            this.dim[5] = (short) (dims[4] > 1 ? dims[4] : 0);
+        } catch (Exception e) {
+            this.dim[5] = 0;
+        }
+        try {
+            this.dim[6] = (short) (dims[5] > 1 ? dims[5] : 0);
+        } catch (Exception e) {
+            this.dim[6] = 0;
+        }
+        try {
+            this.dim[7] = (short) (dims[6] > 1 ? dims[6] : 0);
+        } catch (Exception e) {
+            this.dim[7] = 0;
+        }
+    }
 
     public NiftiHeader(int nx, int ny, int nz, int dim)
     {
         setDefaults();
-
         this.filename = "";
         this.pixdim[0] = 1.0f;
         this.pixdim[1] = 1.0f;
@@ -511,9 +535,9 @@ public class NiftiHeader
         extension_blobs = new ArrayList<byte[]>(5);
     }
 
-    public Map<String,String> info()
+    public Map<String, String> info()
     {
-        Map<String,String> info = new HashMap<String,String>();
+        Map<String, String> info = new HashMap<String, String>();
 
         info.put("size", String.valueOf(sizeof_hdr));
         info.put("data_offset", String.valueOf(vox_offset));
@@ -583,8 +607,8 @@ public class NiftiHeader
 
     public void dump(PrintWriter writer)
     {
-        Map<String,String> attrs = info();
-        for (Map.Entry<String,String> e : attrs.entrySet())
+        Map<String, String> attrs = info();
+        for (Map.Entry<String, String> e : attrs.entrySet())
             writer.println(e.getKey() + ": " + e.getValue());
     }
 
@@ -627,7 +651,7 @@ public class NiftiHeader
      * 
      * @param filename the name of the file to read the header from
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public static NiftiHeader read(String filename) throws IOException {
         InputStream is = new FileInputStream(filename);
@@ -646,7 +670,7 @@ public class NiftiHeader
      * @param is a stream to read the NIFTI header from, uncompressed. This will not close the stream!
      * @param filename the original file name of the header, can be null
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public static NiftiHeader read(InputStream is, String filename) throws IOException {
         BufferedInputStream bufferedStream = (!(is instanceof BufferedInputStream))

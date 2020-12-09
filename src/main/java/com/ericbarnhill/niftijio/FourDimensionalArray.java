@@ -11,12 +11,14 @@ package com.ericbarnhill.niftijio;
         *
         *
  */
-public class FourDimensionalArray {
+@Deprecated
+public class FourDimensionalArray extends NDimensionalArray {
 
     private double[] data;
     private int nx, ny, nz, dim;
 
     public FourDimensionalArray(int nx, int ny, int nz, int dim) {
+        super(new int[] {nx, ny, nz, dim});
         this.nx = nx;
         this.ny = ny;
         this.nz = nz;
@@ -25,6 +27,7 @@ public class FourDimensionalArray {
     }
 
     public FourDimensionalArray(double[][][][] array) {
+        super(new int[] {array.length, array[0].length, array[0][0].length, array[0][0][0].length});
         this.nx = array.length;
         this.ny = array[0].length;
         this.nz = array[0][0].length;
