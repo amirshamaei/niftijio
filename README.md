@@ -24,7 +24,7 @@ Conversion notes:
 
 # niftijio(7-dimension version)
 
-I forked this repository from [niftijio](https://github.com/cabeen/niftijio), which is a Java library for reading and writing NIfTI-1 image volumes which is limited to 4 dimensions.
+I forked this repository from [niftijio](https://github.com/cabeen/niftijio), which is a Java library for reading and writing NIfTI-1 image volumes.
 
 
 ## new features:
@@ -51,4 +51,4 @@ I forked this repository from [niftijio](https://github.com/cabeen/niftijio), wh
 
 ## License:
 
-As the [niftijio](https://github.com/cabeen/niftijio), this is also released under the MIT license.  feel free to create issues, report bug, and contact the developer via amirshamaei@isibrno.cz.
+As the [niftijio](https://github.com/cabeen/niftijio), this is also released under the MIT license.  Feel free to create issues, report bug, and contact the developer via amirshamaei@isibrno.cz.
