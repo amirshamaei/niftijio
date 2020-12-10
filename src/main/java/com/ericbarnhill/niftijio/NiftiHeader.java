@@ -148,46 +148,14 @@ public class NiftiHeader
     {
         setDefaults();
     }
-    public NiftiHeader(int[] dims)
-    {
-        setDefaults();
-        this.filename = "";
-        this.pixdim[0] = 1.0f;
-        this.pixdim[1] = 1.0f;
-        this.pixdim[2] = 1.0f;
-        this.srow_x[0] = 1.0f;
-        this.srow_y[1] = 1.0f;
-        this.srow_z[2] = 1.0f;
-        this.descrip = new StringBuffer("Created: " + new Date().toString());
-        this.setDatatype(NIFTI_TYPE_FLOAT32);
-        this.dim[0] = (short) (dims.length > 1 ? dims.length : 3);
-        this.dim[1] = (short) dims[0];
-        this.dim[2] = (short) dims[1];
-        this.dim[3] = (short) dims[2];
-        try {
-            this.dim[4] = (short) (dims[3] > 1 ? dims[3] : 0);
-        } catch (Exception e) {
-            this.dim[4] = 0;
-        }
-        try {
-            this.dim[5] = (short) (dims[4] > 1 ? dims[4] : 0);
-        } catch (Exception e) {
-            this.dim[5] = 0;
-        }
-        try {
-            this.dim[6] = (short) (dims[5] > 1 ? dims[5] : 0);
-        } catch (Exception e) {
-            this.dim[6] = 0;
-        }
-        try {
-            this.dim[7] = (short) (dims[6] > 1 ? dims[6] : 0);
-        } catch (Exception e) {
-            this.dim[7] = 0;
-        }
-    }
-
     public NiftiHeader(int nx, int ny, int nz, int dim)
     {
+        this(new int[]{nx, ny, nz, dim});
+    }
+    public NiftiHeader(int[] dims)
+    {
+        int lenDim = dims.length;
+        dims = paddims(dims);
         setDefaults();
         this.filename = "";
         this.pixdim[0] = 1.0f;
@@ -198,11 +166,31 @@ public class NiftiHeader
         this.srow_z[2] = 1.0f;
         this.descrip = new StringBuffer("Created: " + new Date().toString());
         this.setDatatype(NIFTI_TYPE_FLOAT32);
-        this.dim[0] = (short) (dim > 1 ? 4 : 3);
-        this.dim[1] = (short) nx;
-        this.dim[2] = (short) ny;
-        this.dim[3] = (short) nz;
-        this.dim[4] = (short) (dim > 1 ? dim : 0);
+        this.dim[0] = (short) (lenDim > 1 ? lenDim : 3);
+
+        for (int i = 1; i < 8; i++) {
+            try {
+                this.dim[i] = (short) dims[i-1];
+            } catch (Exception e) {
+                if (this.dim[i] == 0)
+                    this.dim[i] = 1;
+            }
+
+        }
+
+    }
+
+
+    private int[] paddims(int[] ints) {
+        int[] newInts = new int[7];
+        for (int i = 0; i < 7; i++) {
+            try {
+                newInts[i] = ints[i];
+            } catch (Exception e) {
+                newInts[i] = 1;
+            }
+        }
+        return newInts;
     }
 
     public void setDatatype(short code)
@@ -458,10 +446,6 @@ public class NiftiHeader
         dim = new short[8];
         for (int i = 0; i < 8; i++)
             dim[i] = 0;
-        //dim[1] = 0;
-        //dim[2] = 0;
-        //dim[3] = 0;
-        //dim[4] = 0;
         intent = new float[3];
         for (int i = 0; i < 3; i++)
             intent[i] = (float) 0.0;

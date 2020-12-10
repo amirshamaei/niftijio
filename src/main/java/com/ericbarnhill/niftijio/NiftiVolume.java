@@ -13,17 +13,19 @@ public class NiftiVolume
     public NiftiHeader header;
     public NDimensionalArray data;
 
-    public NiftiVolume(int nx, int ny, int nz, int dim)
-    {
-        this.header = new NiftiHeader(nx, ny, nz, dim);
-        this.data = new NDimensionalArray(new int[]{nx,ny,nz,dim});
-    }
+//    public NiftiVolume(int nx, int ny, int nz, int dim)
+//    {
+//        this(new int[]{nx, ny, nz, dim});
+//    }
 
-    public NiftiVolume(int[] dims)
-    {
-        this.header = new NiftiHeader(dims);
-        this.data = new NDimensionalArray(dims);
-    }
+// creating Nifti volume can be a source of bugs when data is complex; so fist a header should be created then volume
+
+//    public NiftiVolume(int[] dims)
+//    {
+//        dims = paddims(dims);
+//        this.header = new NiftiHeader(dims);
+//        this.data = new NDimensionalArray(dims);
+//    }
 
 
 
@@ -40,6 +42,8 @@ public class NiftiVolume
 
         for (int i = 2; i < 8; i++) {
             dims[i-1] = hdr.dim[i];
+            if (dims[i-1] == 0)
+                dims[i-1] = 1;
         }
 
         this.data = new NDimensionalArray(dims);
@@ -71,7 +75,7 @@ public class NiftiVolume
     }
 
     /** Read the NIFTI volume from a NIFTI input stream.
-     * 
+     *
      * @param is an input stream pointing to the beginning of the NIFTI file, uncompressed.
      * @return a NIFTI volume
      * @throws IOException
@@ -81,7 +85,7 @@ public class NiftiVolume
     }
 
     /** Read the NIFTI volume from a NIFTI input stream.
-     * 
+     *
      * @param is an input stream pointing to the beginning of the NIFTI file, uncompressed. The operation will close the stream.
      * @param filename the name of the original file, can be null
      * @return a NIFTI volume
@@ -112,6 +116,8 @@ public class NiftiVolume
 
         for (int i = 2; i < 8; i++) {
             dims[i-1] = hdr.dim[i];
+            if (dims[i-1] == 0)
+                dims[i-1] = 1;
         }
 
         NiftiVolume out = new NiftiVolume(hdr);
@@ -204,6 +210,8 @@ public class NiftiVolume
 
         for (int i = 2; i < 8; i++) {
             dims[i-1] = hdr.dim[i];
+            if (dims[i-1] == 0)
+                dims[i-1] = 1;
         }
 
         OutputStream os = new BufferedOutputStream(new FileOutputStream(hdr.filename));
