@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="niftijio:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/niftijio_jar</output-path>
+    <root id="archive" name="niftijio.jar">
+      <element id="module-output" name="niftijio" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-io/commons-io/2.5/commons-io-2.5.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
