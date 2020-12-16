@@ -29,7 +29,7 @@ I forked this repository from [niftijio](https://github.com/cabeen/niftijio), wh
 
 ## new features:
 
-
+### NOW niftijio can read NifTi-2 format
 
 *    Support of 7-dimension data
 *    Support of Complex 128
