@@ -1,5 +1,6 @@
 package com.ericbarnhill.niftijio.test;
 
+import com.ericbarnhill.niftijio.Nifti1Header;
 import com.ericbarnhill.niftijio.NiftiVolume;
 import com.ericbarnhill.niftijio.tools.IndexIterator;
 
@@ -13,8 +14,8 @@ public class testNDarray {
         NiftiVolume niftiVolume = NiftiVolume.read(System.getProperty("user.dir") + "/filtered_func_data.nii.gz");
 
         ArrayList<int[]> indcs = new IndexIterator().iterateReverse(niftiVolume.data.getDims());
-        niftiVolume.header.datatype = 64;
-        NiftiVolume newNiftiVolume = new NiftiVolume(niftiVolume.header);
+//        niftiVolume.header.datatype = 64;
+        NiftiVolume newNiftiVolume = new NiftiVolume((Nifti1Header) niftiVolume.header);
         for (int[] indc: indcs
              ) {
             newNiftiVolume.data.set(indc, niftiVolume.data.get(indc));

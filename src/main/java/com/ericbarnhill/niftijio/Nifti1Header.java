@@ -5,45 +5,45 @@ import java.nio.ByteOrder;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
-public class Nifti2Header extends NiftiHeader
+public class Nifti1Header extends NiftiHeader
 {
-
-    public static final int ANZ_HDR_SIZE = 540;
+    /* derived from http://niftilib.sourceforge.net/ */
+    public static final int ANZ_HDR_SIZE = 348;
     public static final int EXT_KEY_SIZE = 8;
-    public static final String NII_MAGIC_STRING = "n+2";
+    public static final String NII_MAGIC_STRING = "n+1";
 
-    public static final int NIFTI_INTENT_NONE = 0;
-    public static final int NIFTI_INTENT_CORREL = 2;
-    public static final int NIFTI_INTENT_TTEST = 3;
-    public static final int NIFTI_INTENT_FTEST = 4;
-    public static final int NIFTI_INTENT_ZSCORE = 5;
-    public static final int NIFTI_INTENT_CHISQ = 6;
-    public static final int NIFTI_INTENT_BETA = 7;
-    public static final int NIFTI_INTENT_BINOM = 8;
-    public static final int NIFTI_INTENT_GAMMA = 9;
-    public static final int NIFTI_INTENT_POISSON = 10;
-    public static final int NIFTI_INTENT_NORMAL = 11;
-    public static final int NIFTI_INTENT_FTEST_NONC = 12;
-    public static final int NIFTI_INTENT_CHISQ_NONC = 13;
-    public static final int NIFTI_INTENT_LOGISTIC = 14;
-    public static final int NIFTI_INTENT_LAPLACE = 15;
-    public static final int NIFTI_INTENT_UNIFORM = 16;
-    public static final int NIFTI_INTENT_TTEST_NONC = 17;
-    public static final int NIFTI_INTENT_WEIBULL = 18;
-    public static final int NIFTI_INTENT_CHI = 19;
-    public static final int NIFTI_INTENT_INVGAUSS = 20;
-    public static final int NIFTI_INTENT_EXTVAL = 21;
-    public static final int NIFTI_INTENT_PVAL = 22;
-    public static final int NIFTI_INTENT_ESTIMATE = 1001;
-    public static final int NIFTI_INTENT_LABEL = 1002;
-    public static final int NIFTI_INTENT_NEURONAME = 1003;
-    public static final int NIFTI_INTENT_GENMATRIX = 1004;
-    public static final int NIFTI_INTENT_SYMMATRIX = 1005;
-    public static final int NIFTI_INTENT_DISPVECT = 1006;
-    public static final int NIFTI_INTENT_VECTOR = 1007;
-    public static final int NIFTI_INTENT_POINTSET = 1008;
-    public static final int NIFTI_INTENT_TRIANGLE = 1009;
-    public static final int NIFTI_INTENT_QUATERNION = 1010;
+    public static final short NIFTI_INTENT_NONE = 0;
+    public static final short NIFTI_INTENT_CORREL = 2;
+    public static final short NIFTI_INTENT_TTEST = 3;
+    public static final short NIFTI_INTENT_FTEST = 4;
+    public static final short NIFTI_INTENT_ZSCORE = 5;
+    public static final short NIFTI_INTENT_CHISQ = 6;
+    public static final short NIFTI_INTENT_BETA = 7;
+    public static final short NIFTI_INTENT_BINOM = 8;
+    public static final short NIFTI_INTENT_GAMMA = 9;
+    public static final short NIFTI_INTENT_POISSON = 10;
+    public static final short NIFTI_INTENT_NORMAL = 11;
+    public static final short NIFTI_INTENT_FTEST_NONC = 12;
+    public static final short NIFTI_INTENT_CHISQ_NONC = 13;
+    public static final short NIFTI_INTENT_LOGISTIC = 14;
+    public static final short NIFTI_INTENT_LAPLACE = 15;
+    public static final short NIFTI_INTENT_UNIFORM = 16;
+    public static final short NIFTI_INTENT_TTEST_NONC = 17;
+    public static final short NIFTI_INTENT_WEIBULL = 18;
+    public static final short NIFTI_INTENT_CHI = 19;
+    public static final short NIFTI_INTENT_INVGAUSS = 20;
+    public static final short NIFTI_INTENT_EXTVAL = 21;
+    public static final short NIFTI_INTENT_PVAL = 22;
+    public static final short NIFTI_INTENT_ESTIMATE = 1001;
+    public static final short NIFTI_INTENT_LABEL = 1002;
+    public static final short NIFTI_INTENT_NEURONAME = 1003;
+    public static final short NIFTI_INTENT_GENMATRIX = 1004;
+    public static final short NIFTI_INTENT_SYMMATRIX = 1005;
+    public static final short NIFTI_INTENT_DISPVECT = 1006;
+    public static final short NIFTI_INTENT_VECTOR = 1007;
+    public static final short NIFTI_INTENT_POINTSET = 1008;
+    public static final short NIFTI_INTENT_TRIANGLE = 1009;
+    public static final short NIFTI_INTENT_QUATERNION = 1010;
 
     public static final short DT_NONE = 0;
     public static final short DT_BINARY = 1;
@@ -74,16 +74,16 @@ public class Nifti2Header extends NiftiHeader
     public static final short NIFTI_UNITS_HZ = 32;
     public static final short NIFTI_UNITS_PPM = 40;
 
-    public static final int NIFTI_SLICE_SEQ_INC = 1;
-    public static final int NIFTI_SLICE_SEQ_DEC = 2;
-    public static final int NIFTI_SLICE_ALT_INC = 3;
-    public static final int NIFTI_SLICE_ALT_DEC = 4;
+    public static final short NIFTI_SLICE_SEQ_INC = 1;
+    public static final short NIFTI_SLICE_SEQ_DEC = 2;
+    public static final short NIFTI_SLICE_ALT_INC = 3;
+    public static final short NIFTI_SLICE_ALT_DEC = 4;
 
-    public static final int NIFTI_XFORM_UNKNOWN = 0;
-    public static final int NIFTI_XFORM_SCANNER_ANAT = 1;
-    public static final int NIFTI_XFORM_ALIGNED_ANAT = 2;
-    public static final int NIFTI_XFORM_TALAIRACH = 3;
-    public static final int NIFTI_XFORM_MNI_152 = 4;
+    public static final short NIFTI_XFORM_UNKNOWN = 0;
+    public static final short NIFTI_XFORM_SCANNER_ANAT = 1;
+    public static final short NIFTI_XFORM_ALIGNED_ANAT = 2;
+    public static final short NIFTI_XFORM_TALAIRACH = 3;
+    public static final short NIFTI_XFORM_MNI_152 = 4;
 
     public static final int NIFTI_L2R = 1;
     public static final int NIFTI_R2L = 2;
@@ -93,7 +93,7 @@ public class Nifti2Header extends NiftiHeader
     public static final int NIFTI_S2I = 6;
 
     public static final String[] NIFTI_ORIENT =
-            { "L", "R", "P", "A", "I", "S" };
+    { "L", "R", "P", "A", "I", "S" };
 
     public String filename;
     public boolean little_endian;
@@ -104,105 +104,93 @@ public class Nifti2Header extends NiftiHeader
     public List<byte[]> extension_blobs;
 
 //    public int sizeof_hdr;
-//    public StringBuffer data_type_string;
-//    public StringBuffer db_name;
-//    public int extents;
-//    public short session_error;
-//    public StringBuffer regular;
+    public StringBuffer data_type_string;
+    public StringBuffer db_name;
+    public int extents;
+    public short session_error;
+    public StringBuffer regular;
     public StringBuffer dim_info;
-    public long dim[];
-    public double intent[];
-    public int intent_code;
+    public short dim[];
+    public float intent[];
+    public short intent_code;
     public short datatype;
     public short bitpix;
-    public long slice_start;
-    public double pixdim[];
-    public long vox_offset;
-    public double scl_slope;
-    public double scl_inter;
-    public long slice_end;
-    public int slice_code;
-    public int xyzt_units;
-    public double cal_max;
-    public double cal_min;
-    public double slice_duration;
-    public double toffset;
-//    public int glmax;
-//    public int glmin;
+    public short slice_start;
+    public float pixdim[];
+    public float vox_offset;
+    public float scl_slope;
+    public float scl_inter;
+    public short slice_end;
+    public byte slice_code;
+    public byte xyzt_units;
+    public float cal_max;
+    public float cal_min;
+    public float slice_duration;
+    public float toffset;
+    public int glmax;
+    public int glmin;
     public StringBuffer descrip;
     public StringBuffer aux_file;
-    public int qform_code;
-    public int sform_code;
-    public double quatern[];
-    public double qoffset[];
-    public double srow_x[];
-    public double srow_y[];
-    public double srow_z[];
+    public short qform_code;
+    public short sform_code;
+    public float quatern[];
+    public float qoffset[];
+    public float srow_x[];
+    public float srow_y[];
+    public float srow_z[];
     public StringBuffer intent_name;
     public StringBuffer magic;
     public byte extension[];
 
 
 
-    public Nifti2Header()
+    public Nifti1Header()
     {
         setDefaults();
     }
-    public Nifti2Header(int[] dims)
+    public Nifti1Header(int nx, int ny, int nz, int dim)
     {
+        this(new int[]{nx, ny, nz, dim});
+    }
+    public Nifti1Header(int[] dims)
+    {
+        int lenDim = dims.length;
+        dims = paddims(dims);
         setDefaults();
         this.filename = "";
-        this.pixdim[0] = 1.0d;
-        this.pixdim[1] = 1.0d;
-        this.pixdim[2] = 1.0d;
-        this.srow_x[0] = 1.0d;
-        this.srow_y[1] = 1.0d;
-        this.srow_z[2] = 1.0d;
+        this.pixdim[0] = 1.0f;
+        this.pixdim[1] = 1.0f;
+        this.pixdim[2] = 1.0f;
+        this.srow_x[0] = 1.0f;
+        this.srow_y[1] = 1.0f;
+        this.srow_z[2] = 1.0f;
         this.descrip = new StringBuffer("Created: " + new Date().toString());
         this.setDatatype(NIFTI_TYPE_FLOAT32);
-        this.dim[0] = (long) (dims.length > 1 ? dims.length : 3);
-        this.dim[1] = (long) dims[0];
-        this.dim[2] = (long) dims[1];
-        this.dim[3] = (long) dims[2];
-        try {
-            this.dim[4] = (long) (dims[3] > 1 ? dims[3] : 0);
-        } catch (Exception e) {
-            this.dim[4] = 0;
+        this.dim[0] = (short) (lenDim > 1 ? lenDim : 3);
+
+        for (int i = 1; i < 8; i++) {
+            try {
+                this.dim[i] = (short) dims[i-1];
+            } catch (Exception e) {
+                if (this.dim[i] == 0)
+                    this.dim[i] = 1;
+            }
+
         }
-        try {
-            this.dim[5] = (long) (dims[4] > 1 ? dims[4] : 0);
-        } catch (Exception e) {
-            this.dim[5] = 0;
-        }
-        try {
-            this.dim[6] = (long) (dims[5] > 1 ? dims[5] : 0);
-        } catch (Exception e) {
-            this.dim[6] = 0;
-        }
-        try {
-            this.dim[7] = (long) (dims[6] > 1 ? dims[6] : 0);
-        } catch (Exception e) {
-            this.dim[7] = 0;
-        }
+
     }
 
-    public Nifti2Header(int nx, int ny, int nz, int dim)
-    {
-        setDefaults();
-        this.filename = "";
-        this.pixdim[0] = 1.0d;
-        this.pixdim[1] = 1.0d;
-        this.pixdim[2] = 1.0d;
-        this.srow_x[0] = 1.0d;
-        this.srow_y[1] = 1.0d;
-        this.srow_z[2] = 1.0d;
-        this.descrip = new StringBuffer("Created: " + new Date().toString());
-        this.setDatatype(NIFTI_TYPE_FLOAT32);
-        this.dim[0] = (long) (dim > 1 ? 4 : 3);
-        this.dim[1] = (long) nx;
-        this.dim[2] = (long) ny;
-        this.dim[3] = (long) nz;
-        this.dim[4] = (long) (dim > 1 ? dim : 0);
+
+    private int[] paddims(int[] ints) {
+        int[] newInts = new int[7];
+        for (int i = 0; i < 7; i++) {
+            try {
+                newInts[i] = ints[i];
+            } catch (Exception e) {
+                newInts[i] = 1;
+            }
+        }
+        return newInts;
     }
 
     public void setDatatype(short code)
@@ -212,76 +200,76 @@ public class Nifti2Header extends NiftiHeader
         return;
     }
 
-    public String decodeIntent(int icode)
+    public String decodeIntent(short icode)
     {
         switch (icode)
         {
-            case Nifti2Header.NIFTI_INTENT_NONE:
-                return ("NIFTI_INTENT_NONE");
-            case Nifti2Header.NIFTI_INTENT_CORREL:
-                return ("NIFTI_INTENT_CORREL");
-            case Nifti2Header.NIFTI_INTENT_TTEST:
-                return ("NIFTI_INTENT_TTEST");
-            case Nifti2Header.NIFTI_INTENT_FTEST:
-                return ("NIFTI_INTENT_FTEST");
-            case Nifti2Header.NIFTI_INTENT_ZSCORE:
-                return ("NIFTI_INTENT_ZSCORE");
-            case Nifti2Header.NIFTI_INTENT_CHISQ:
-                return ("NIFTI_INTENT_CHISQ");
-            case Nifti2Header.NIFTI_INTENT_BETA:
-                return ("NIFTI_INTENT_BETA");
-            case Nifti2Header.NIFTI_INTENT_BINOM:
-                return ("NIFTI_INTENT_BINOM");
-            case Nifti2Header.NIFTI_INTENT_GAMMA:
-                return ("NIFTI_INTENT_GAMMA");
-            case Nifti2Header.NIFTI_INTENT_POISSON:
-                return ("NIFTI_INTENT_POISSON");
-            case Nifti2Header.NIFTI_INTENT_NORMAL:
-                return ("NIFTI_INTENT_NORMAL");
-            case Nifti2Header.NIFTI_INTENT_FTEST_NONC:
-                return ("NIFTI_INTENT_FTEST_NONC");
-            case Nifti2Header.NIFTI_INTENT_CHISQ_NONC:
-                return ("NIFTI_INTENT_CHISQ_NONC");
-            case Nifti2Header.NIFTI_INTENT_LOGISTIC:
-                return ("NIFTI_INTENT_LOGISTIC");
-            case Nifti2Header.NIFTI_INTENT_LAPLACE:
-                return ("NIFTI_INTENT_LAPLACE");
-            case Nifti2Header.NIFTI_INTENT_UNIFORM:
-                return ("NIFTI_INTENT_UNIFORM");
-            case Nifti2Header.NIFTI_INTENT_TTEST_NONC:
-                return ("NIFTI_INTENT_TTEST_NONC");
-            case Nifti2Header.NIFTI_INTENT_WEIBULL:
-                return ("NIFTI_INTENT_WEIBULL");
-            case Nifti2Header.NIFTI_INTENT_CHI:
-                return ("NIFTI_INTENT_CHI");
-            case Nifti2Header.NIFTI_INTENT_INVGAUSS:
-                return ("NIFTI_INTENT_INVGAUSS");
-            case Nifti2Header.NIFTI_INTENT_EXTVAL:
-                return ("NIFTI_INTENT_EXTVAL");
-            case Nifti2Header.NIFTI_INTENT_PVAL:
-                return ("NIFTI_INTENT_PVAL");
-            case Nifti2Header.NIFTI_INTENT_ESTIMATE:
-                return ("NIFTI_INTENT_ESTIMATE");
-            case Nifti2Header.NIFTI_INTENT_LABEL:
-                return ("NIFTI_INTENT_LABEL");
-            case Nifti2Header.NIFTI_INTENT_NEURONAME:
-                return ("NIFTI_INTENT_NEURONAME");
-            case Nifti2Header.NIFTI_INTENT_GENMATRIX:
-                return ("NIFTI_INTENT_GENMATRIX");
-            case Nifti2Header.NIFTI_INTENT_SYMMATRIX:
-                return ("NIFTI_INTENT_SYMMATRIX");
-            case Nifti2Header.NIFTI_INTENT_DISPVECT:
-                return ("NIFTI_INTENT_DISPVECT");
-            case Nifti2Header.NIFTI_INTENT_VECTOR:
-                return ("NIFTI_INTENT_VECTOR");
-            case Nifti2Header.NIFTI_INTENT_POINTSET:
-                return ("NIFTI_INTENT_POINTSET");
-            case Nifti2Header.NIFTI_INTENT_TRIANGLE:
-                return ("NIFTI_INTENT_TRIANGLE");
-            case Nifti2Header.NIFTI_INTENT_QUATERNION:
-                return ("NIFTI_INTENT_QUATERNION");
-            default:
-                return ("INVALID_NIFTI_INTENT_CODE");
+        case Nifti1Header.NIFTI_INTENT_NONE:
+            return ("NIFTI_INTENT_NONE");
+        case Nifti1Header.NIFTI_INTENT_CORREL:
+            return ("NIFTI_INTENT_CORREL");
+        case Nifti1Header.NIFTI_INTENT_TTEST:
+            return ("NIFTI_INTENT_TTEST");
+        case Nifti1Header.NIFTI_INTENT_FTEST:
+            return ("NIFTI_INTENT_FTEST");
+        case Nifti1Header.NIFTI_INTENT_ZSCORE:
+            return ("NIFTI_INTENT_ZSCORE");
+        case Nifti1Header.NIFTI_INTENT_CHISQ:
+            return ("NIFTI_INTENT_CHISQ");
+        case Nifti1Header.NIFTI_INTENT_BETA:
+            return ("NIFTI_INTENT_BETA");
+        case Nifti1Header.NIFTI_INTENT_BINOM:
+            return ("NIFTI_INTENT_BINOM");
+        case Nifti1Header.NIFTI_INTENT_GAMMA:
+            return ("NIFTI_INTENT_GAMMA");
+        case Nifti1Header.NIFTI_INTENT_POISSON:
+            return ("NIFTI_INTENT_POISSON");
+        case Nifti1Header.NIFTI_INTENT_NORMAL:
+            return ("NIFTI_INTENT_NORMAL");
+        case Nifti1Header.NIFTI_INTENT_FTEST_NONC:
+            return ("NIFTI_INTENT_FTEST_NONC");
+        case Nifti1Header.NIFTI_INTENT_CHISQ_NONC:
+            return ("NIFTI_INTENT_CHISQ_NONC");
+        case Nifti1Header.NIFTI_INTENT_LOGISTIC:
+            return ("NIFTI_INTENT_LOGISTIC");
+        case Nifti1Header.NIFTI_INTENT_LAPLACE:
+            return ("NIFTI_INTENT_LAPLACE");
+        case Nifti1Header.NIFTI_INTENT_UNIFORM:
+            return ("NIFTI_INTENT_UNIFORM");
+        case Nifti1Header.NIFTI_INTENT_TTEST_NONC:
+            return ("NIFTI_INTENT_TTEST_NONC");
+        case Nifti1Header.NIFTI_INTENT_WEIBULL:
+            return ("NIFTI_INTENT_WEIBULL");
+        case Nifti1Header.NIFTI_INTENT_CHI:
+            return ("NIFTI_INTENT_CHI");
+        case Nifti1Header.NIFTI_INTENT_INVGAUSS:
+            return ("NIFTI_INTENT_INVGAUSS");
+        case Nifti1Header.NIFTI_INTENT_EXTVAL:
+            return ("NIFTI_INTENT_EXTVAL");
+        case Nifti1Header.NIFTI_INTENT_PVAL:
+            return ("NIFTI_INTENT_PVAL");
+        case Nifti1Header.NIFTI_INTENT_ESTIMATE:
+            return ("NIFTI_INTENT_ESTIMATE");
+        case Nifti1Header.NIFTI_INTENT_LABEL:
+            return ("NIFTI_INTENT_LABEL");
+        case Nifti1Header.NIFTI_INTENT_NEURONAME:
+            return ("NIFTI_INTENT_NEURONAME");
+        case Nifti1Header.NIFTI_INTENT_GENMATRIX:
+            return ("NIFTI_INTENT_GENMATRIX");
+        case Nifti1Header.NIFTI_INTENT_SYMMATRIX:
+            return ("NIFTI_INTENT_SYMMATRIX");
+        case Nifti1Header.NIFTI_INTENT_DISPVECT:
+            return ("NIFTI_INTENT_DISPVECT");
+        case Nifti1Header.NIFTI_INTENT_VECTOR:
+            return ("NIFTI_INTENT_VECTOR");
+        case Nifti1Header.NIFTI_INTENT_POINTSET:
+            return ("NIFTI_INTENT_POINTSET");
+        case Nifti1Header.NIFTI_INTENT_TRIANGLE:
+            return ("NIFTI_INTENT_TRIANGLE");
+        case Nifti1Header.NIFTI_INTENT_QUATERNION:
+            return ("NIFTI_INTENT_QUATERNION");
+        default:
+            return ("INVALID_NIFTI_INTENT_CODE");
         }
     }
 
@@ -289,44 +277,44 @@ public class Nifti2Header extends NiftiHeader
     {
         switch (dcode)
         {
-            case DT_NONE:
-                return ("DT_NONE");
-            case DT_BINARY:
-                return ("DT_BINARY");
-            case Nifti2Header.NIFTI_TYPE_UINT8:
-                return ("NIFTI_TYPE_UINT8");
-            case Nifti2Header.NIFTI_TYPE_INT16:
-                return ("NIFTI_TYPE_INT16");
-            case Nifti2Header.NIFTI_TYPE_INT32:
-                return ("NIFTI_TYPE_INT32");
-            case Nifti2Header.NIFTI_TYPE_FLOAT32:
-                return ("NIFTI_TYPE_FLOAT32");
-            case Nifti2Header.NIFTI_TYPE_COMPLEX64:
-                return ("NIFTI_TYPE_COMPLEX64");
-            case Nifti2Header.NIFTI_TYPE_FLOAT64:
-                return ("NIFTI_TYPE_FLOAT64");
-            case Nifti2Header.NIFTI_TYPE_RGB24:
-                return ("NIFTI_TYPE_RGB24");
-            case DT_ALL:
-                return ("DT_ALL");
-            case Nifti2Header.NIFTI_TYPE_INT8:
-                return ("NIFTI_TYPE_INT8");
-            case Nifti2Header.NIFTI_TYPE_UINT16:
-                return ("NIFTI_TYPE_UINT16");
-            case Nifti2Header.NIFTI_TYPE_UINT32:
-                return ("NIFTI_TYPE_UINT32");
-            case Nifti2Header.NIFTI_TYPE_INT64:
-                return ("NIFTI_TYPE_INT64");
-            case Nifti2Header.NIFTI_TYPE_UINT64:
-                return ("NIFTI_TYPE_UINT64");
-            case Nifti2Header.NIFTI_TYPE_FLOAT128:
-                return ("NIFTI_TYPE_FLOAT128");
-            case Nifti2Header.NIFTI_TYPE_COMPLEX128:
-                return ("NIFTI_TYPE_COMPLEX128");
-            case Nifti2Header.NIFTI_TYPE_COMPLEX256:
-                return ("NIFTI_TYPE_COMPLEX256");
-            default:
-                return ("INVALID_NIFTI_DATATYPE_CODE");
+        case DT_NONE:
+            return ("DT_NONE");
+        case DT_BINARY:
+            return ("DT_BINARY");
+        case Nifti1Header.NIFTI_TYPE_UINT8:
+            return ("NIFTI_TYPE_UINT8");
+        case Nifti1Header.NIFTI_TYPE_INT16:
+            return ("NIFTI_TYPE_INT16");
+        case Nifti1Header.NIFTI_TYPE_INT32:
+            return ("NIFTI_TYPE_INT32");
+        case Nifti1Header.NIFTI_TYPE_FLOAT32:
+            return ("NIFTI_TYPE_FLOAT32");
+        case Nifti1Header.NIFTI_TYPE_COMPLEX64:
+            return ("NIFTI_TYPE_COMPLEX64");
+        case Nifti1Header.NIFTI_TYPE_FLOAT64:
+            return ("NIFTI_TYPE_FLOAT64");
+        case Nifti1Header.NIFTI_TYPE_RGB24:
+            return ("NIFTI_TYPE_RGB24");
+        case DT_ALL:
+            return ("DT_ALL");
+        case Nifti1Header.NIFTI_TYPE_INT8:
+            return ("NIFTI_TYPE_INT8");
+        case Nifti1Header.NIFTI_TYPE_UINT16:
+            return ("NIFTI_TYPE_UINT16");
+        case Nifti1Header.NIFTI_TYPE_UINT32:
+            return ("NIFTI_TYPE_UINT32");
+        case Nifti1Header.NIFTI_TYPE_INT64:
+            return ("NIFTI_TYPE_INT64");
+        case Nifti1Header.NIFTI_TYPE_UINT64:
+            return ("NIFTI_TYPE_UINT64");
+        case Nifti1Header.NIFTI_TYPE_FLOAT128:
+            return ("NIFTI_TYPE_FLOAT128");
+        case Nifti1Header.NIFTI_TYPE_COMPLEX128:
+            return ("NIFTI_TYPE_COMPLEX128");
+        case Nifti1Header.NIFTI_TYPE_COMPLEX256:
+            return ("NIFTI_TYPE_COMPLEX256");
+        default:
+            return ("INVALID_NIFTI_DATATYPE_CODE");
         }
     }
 
@@ -334,80 +322,80 @@ public class Nifti2Header extends NiftiHeader
     {
         switch (dcode)
         {
-            case DT_NONE:
-                return (0);
-            case DT_BINARY:
-                return (-1);
-            case Nifti2Header.NIFTI_TYPE_UINT8:
-                return (1);
-            case Nifti2Header.NIFTI_TYPE_INT16:
-                return (2);
-            case Nifti2Header.NIFTI_TYPE_INT32:
-                return (4);
-            case Nifti2Header.NIFTI_TYPE_FLOAT32:
-                return (4);
-            case Nifti2Header.NIFTI_TYPE_COMPLEX64:
-                return (8);
-            case Nifti2Header.NIFTI_TYPE_FLOAT64:
-                return (8);
-            case Nifti2Header.NIFTI_TYPE_RGB24:
-                return (3);
-            case DT_ALL:
-                return (0);
-            case Nifti2Header.NIFTI_TYPE_INT8:
-                return (1);
-            case Nifti2Header.NIFTI_TYPE_UINT16:
-                return (2);
-            case Nifti2Header.NIFTI_TYPE_UINT32:
-                return (4);
-            case Nifti2Header.NIFTI_TYPE_INT64:
-                return (8);
-            case Nifti2Header.NIFTI_TYPE_UINT64:
-                return (8);
-            case Nifti2Header.NIFTI_TYPE_FLOAT128:
-                return (16);
-            case Nifti2Header.NIFTI_TYPE_COMPLEX128:
-                return (16);
-            case Nifti2Header.NIFTI_TYPE_COMPLEX256:
-                return (32);
-            default:
-                return (0);
+        case DT_NONE:
+            return (0);
+        case DT_BINARY:
+            return (-1);
+        case Nifti1Header.NIFTI_TYPE_UINT8:
+            return (1);
+        case Nifti1Header.NIFTI_TYPE_INT16:
+            return (2);
+        case Nifti1Header.NIFTI_TYPE_INT32:
+            return (4);
+        case Nifti1Header.NIFTI_TYPE_FLOAT32:
+            return (4);
+        case Nifti1Header.NIFTI_TYPE_COMPLEX64:
+            return (8);
+        case Nifti1Header.NIFTI_TYPE_FLOAT64:
+            return (8);
+        case Nifti1Header.NIFTI_TYPE_RGB24:
+            return (3);
+        case DT_ALL:
+            return (0);
+        case Nifti1Header.NIFTI_TYPE_INT8:
+            return (1);
+        case Nifti1Header.NIFTI_TYPE_UINT16:
+            return (2);
+        case Nifti1Header.NIFTI_TYPE_UINT32:
+            return (4);
+        case Nifti1Header.NIFTI_TYPE_INT64:
+            return (8);
+        case Nifti1Header.NIFTI_TYPE_UINT64:
+            return (8);
+        case Nifti1Header.NIFTI_TYPE_FLOAT128:
+            return (16);
+        case Nifti1Header.NIFTI_TYPE_COMPLEX128:
+            return (16);
+        case Nifti1Header.NIFTI_TYPE_COMPLEX256:
+            return (32);
+        default:
+            return (0);
         }
     }
 
-    public String decodeSliceOrder(int code)
+    public String decodeSliceOrder(short code)
     {
         switch (code)
         {
-            case Nifti2Header.NIFTI_SLICE_SEQ_INC:
-                return ("NIFTI_SLICE_SEQ_INC");
-            case Nifti2Header.NIFTI_SLICE_SEQ_DEC:
-                return ("NIFTI_SLICE_SEQ_DEC");
-            case Nifti2Header.NIFTI_SLICE_ALT_INC:
-                return ("NIFTI_SLICE_ALT_INC");
-            case Nifti2Header.NIFTI_SLICE_ALT_DEC:
-                return ("NIFTI_SLICE_ALT_DEC");
-            default:
-                return ("INVALID_NIFTI_SLICE_SEQ_CODE");
+        case Nifti1Header.NIFTI_SLICE_SEQ_INC:
+            return ("NIFTI_SLICE_SEQ_INC");
+        case Nifti1Header.NIFTI_SLICE_SEQ_DEC:
+            return ("NIFTI_SLICE_SEQ_DEC");
+        case Nifti1Header.NIFTI_SLICE_ALT_INC:
+            return ("NIFTI_SLICE_ALT_INC");
+        case Nifti1Header.NIFTI_SLICE_ALT_DEC:
+            return ("NIFTI_SLICE_ALT_DEC");
+        default:
+            return ("INVALID_NIFTI_SLICE_SEQ_CODE");
         }
     }
 
-    public String decodeXform(int code)
+    public String decodeXform(short code)
     {
         switch (code)
         {
-            case Nifti2Header.NIFTI_XFORM_UNKNOWN:
-                return ("NIFTI_XFORM_UNKNOWN");
-            case Nifti2Header.NIFTI_XFORM_SCANNER_ANAT:
-                return ("NIFTI_XFORM_SCANNER_ANAT");
-            case Nifti2Header.NIFTI_XFORM_ALIGNED_ANAT:
-                return ("NIFTI_XFORM_ALIGNED_ANAT");
-            case Nifti2Header.NIFTI_XFORM_TALAIRACH:
-                return ("NIFTI_XFORM_TALAIRACH");
-            case Nifti2Header.NIFTI_XFORM_MNI_152:
-                return ("NIFTI_XFORM_MNI_152");
-            default:
-                return ("INVALID_NIFTI_XFORM_CODE");
+        case Nifti1Header.NIFTI_XFORM_UNKNOWN:
+            return ("NIFTI_XFORM_UNKNOWN");
+        case Nifti1Header.NIFTI_XFORM_SCANNER_ANAT:
+            return ("NIFTI_XFORM_SCANNER_ANAT");
+        case Nifti1Header.NIFTI_XFORM_ALIGNED_ANAT:
+            return ("NIFTI_XFORM_ALIGNED_ANAT");
+        case Nifti1Header.NIFTI_XFORM_TALAIRACH:
+            return ("NIFTI_XFORM_TALAIRACH");
+        case Nifti1Header.NIFTI_XFORM_MNI_152:
+            return ("NIFTI_XFORM_MNI_152");
+        default:
+            return ("INVALID_NIFTI_XFORM_CODE");
         }
     }
 
@@ -415,26 +403,26 @@ public class Nifti2Header extends NiftiHeader
     {
         switch (code)
         {
-            case Nifti2Header.NIFTI_UNITS_UNKNOWN:
-                return ("NIFTI_UNITS_UNKNOWN");
-            case Nifti2Header.NIFTI_UNITS_METER:
-                return ("NIFTI_UNITS_METER");
-            case Nifti2Header.NIFTI_UNITS_MM:
-                return ("NIFTI_UNITS_MM");
-            case Nifti2Header.NIFTI_UNITS_MICRON:
-                return ("NIFTI_UNITS_MICRON");
-            case Nifti2Header.NIFTI_UNITS_SEC:
-                return ("NIFTI_UNITS_SEC");
-            case Nifti2Header.NIFTI_UNITS_MSEC:
-                return ("NIFTI_UNITS_MSEC");
-            case Nifti2Header.NIFTI_UNITS_USEC:
-                return ("NIFTI_UNITS_USEC");
-            case Nifti2Header.NIFTI_UNITS_HZ:
-                return ("NIFTI_UNITS_HZ");
-            case Nifti2Header.NIFTI_UNITS_PPM:
-                return ("NIFTI_UNITS_PPM");
-            default:
-                return ("INVALID_NIFTI_UNITS_CODE");
+        case Nifti1Header.NIFTI_UNITS_UNKNOWN:
+            return ("NIFTI_UNITS_UNKNOWN");
+        case Nifti1Header.NIFTI_UNITS_METER:
+            return ("NIFTI_UNITS_METER");
+        case Nifti1Header.NIFTI_UNITS_MM:
+            return ("NIFTI_UNITS_MM");
+        case Nifti1Header.NIFTI_UNITS_MICRON:
+            return ("NIFTI_UNITS_MICRON");
+        case Nifti1Header.NIFTI_UNITS_SEC:
+            return ("NIFTI_UNITS_SEC");
+        case Nifti1Header.NIFTI_UNITS_MSEC:
+            return ("NIFTI_UNITS_MSEC");
+        case Nifti1Header.NIFTI_UNITS_USEC:
+            return ("NIFTI_UNITS_USEC");
+        case Nifti1Header.NIFTI_UNITS_HZ:
+            return ("NIFTI_UNITS_HZ");
+        case Nifti1Header.NIFTI_UNITS_PPM:
+            return ("NIFTI_UNITS_PPM");
+        default:
+            return ("INVALID_NIFTI_UNITS_CODE");
         }
     }
 
@@ -442,55 +430,51 @@ public class Nifti2Header extends NiftiHeader
     {
         little_endian = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
         sizeof_hdr = ANZ_HDR_SIZE;
-//        data_type_string = new StringBuffer();
-//        for (int i = 0; i < 10; i++)
-//            data_type_string.append("\0");
-//        db_name = new StringBuffer();
-//        for (int i = 0; i < 18; i++)
-//            db_name.append("\0");
-//        extents = 0;
-//        session_error = 0;
-//        regular = new StringBuffer("\0");
+        data_type_string = new StringBuffer();
+        for (int i = 0; i < 10; i++)
+            data_type_string.append("\0");
+        db_name = new StringBuffer();
+        for (int i = 0; i < 18; i++)
+            db_name.append("\0");
+        extents = 0;
+        session_error = 0;
+        regular = new StringBuffer("\0");
         dim_info = new StringBuffer("\0");
         freq_dim = 0;
         phase_dim = 0;
         slice_dim = 0;
-        dim = new long[8];
+        dim = new short[8];
         for (int i = 0; i < 8; i++)
             dim[i] = 0;
-        //dim[1] = 0;
-        //dim[2] = 0;
-        //dim[3] = 0;
-        //dim[4] = 0;
-        intent = new double[3];
+        intent = new float[3];
         for (int i = 0; i < 3; i++)
-            intent[i] = (double) 0.0;
-        intent_code = Nifti2Header.NIFTI_INTENT_NONE;
+            intent[i] = (float) 0.0;
+        intent_code = Nifti1Header.NIFTI_INTENT_NONE;
         datatype = DT_NONE;
         bitpix = 0;
         slice_start = 0;
-        pixdim = new double[8];
+        pixdim = new float[8];
         pixdim[0] = 1;
         qfac = 1;
         for (int i = 1; i < 8; i++)
-            pixdim[i] = (double) 0.0;
+            pixdim[i] = (float) 0.0;
 
-        vox_offset = (long) 352;
+        vox_offset = (float) 352;
 
-        scl_slope = (double) 0.0;
-        scl_inter = (double) 0.0;
+        scl_slope = (float) 0.0;
+        scl_inter = (float) 0.0;
         slice_end = 0;
         slice_code = (byte) 0;
         xyzt_units = (byte) 0;
-        xyz_unit_code = Nifti2Header.NIFTI_UNITS_UNKNOWN;
-        t_unit_code = Nifti2Header.NIFTI_UNITS_UNKNOWN;
+        xyz_unit_code = Nifti1Header.NIFTI_UNITS_UNKNOWN;
+        t_unit_code = Nifti1Header.NIFTI_UNITS_UNKNOWN;
 
-        cal_max = (double) 0.0;
-        cal_min = (double) 0.0;
-        slice_duration = (double) 0.0;
-        toffset = (double) 0.0;
-//        glmax = 0;
-//        glmin = 0;
+        cal_max = (float) 0.0;
+        cal_min = (float) 0.0;
+        slice_duration = (float) 0.0;
+        toffset = (float) 0.0;
+        glmax = 0;
+        glmin = 0;
 
         descrip = new StringBuffer();
 
@@ -500,25 +484,25 @@ public class Nifti2Header extends NiftiHeader
         for (int i = 0; i < 24; i++)
             aux_file.append("\0");
 
-        qform_code = Nifti2Header.NIFTI_XFORM_UNKNOWN;
-        sform_code = Nifti2Header.NIFTI_XFORM_UNKNOWN;
+        qform_code = Nifti1Header.NIFTI_XFORM_UNKNOWN;
+        sform_code = Nifti1Header.NIFTI_XFORM_UNKNOWN;
 
-        quatern = new double[3];
-        qoffset = new double[3];
+        quatern = new float[3];
+        qoffset = new float[3];
         for (int i = 0; i < 3; i++)
         {
-            quatern[i] = (double) 0.0;
-            qoffset[i] = (double) 0.0;
+            quatern[i] = (float) 0.0;
+            qoffset[i] = (float) 0.0;
         }
 
-        srow_x = new double[4];
-        srow_y = new double[4];
-        srow_z = new double[4];
+        srow_x = new float[4];
+        srow_y = new float[4];
+        srow_z = new float[4];
         for (int i = 0; i < 4; i++)
         {
-            srow_x[i] = (double) 0.0;
-            srow_y[i] = (double) 0.0;
-            srow_z[i] = (double) 0.0;
+            srow_x[i] = (float) 0.0;
+            srow_y[i] = (float) 0.0;
+            srow_z[i] = (float) 0.0;
         }
 
         intent_name = new StringBuffer();
@@ -569,7 +553,7 @@ public class Nifti2Header extends NiftiHeader
         info.put("cal_min", String.valueOf(cal_min));
 
         info.put("slice_code", String.valueOf(slice_code));
-        info.put("slice_name", decodeSliceOrder((int) slice_code));
+        info.put("slice_name", decodeSliceOrder((short) slice_code));
         info.put("slice_freq", String.valueOf(freq_dim));
         info.put("slice_phase", String.valueOf(phase_dim));
         info.put("slice_index", String.valueOf(slice_dim));
@@ -636,24 +620,24 @@ public class Nifti2Header extends NiftiHeader
         if (!stream.markSupported()) {
             throw new IllegalArgumentException("stream does not support marks");
         }
-
-        stream.mark(24);
+        
+        stream.mark(42);
         DataInputStream di = new DataInputStream(stream);
 
-        di.skipBytes(16);
-        long s = di.readLong();
+        di.skipBytes(40);
+        short s = di.readShort();
 
         stream.reset();
         return (s < 1) || (s > 7);
     }
-
+    
     /** Read a NIFTI header from a file.
-     *
+     * 
      * @param filename the name of the file to read the header from
      * @return
      * @throws IOException
      */
-    public static Nifti2Header read(String filename) throws IOException {
+    public static Nifti1Header read(String filename) throws IOException {
         InputStream is = new FileInputStream(filename);
         if (filename.endsWith(".gz"))
             is = new GZIPInputStream(is);
@@ -666,41 +650,54 @@ public class Nifti2Header extends NiftiHeader
 
     /** Read a NIFTI header from a binary data input stream. This method assumes that the content retrieved
      * from the input stream is already uncompressed.
-     *
+     * 
      * @param is a stream to read the NIFTI header from, uncompressed. This will not close the stream!
      * @param filename the original file name of the header, can be null
      * @return
      * @throws IOException
      */
-    public static Nifti2Header read(InputStream is, String filename) throws IOException {
+    public static Nifti1Header read(InputStream is, String filename) throws IOException {
         BufferedInputStream bufferedStream = (!(is instanceof BufferedInputStream))
                 ? new BufferedInputStream(is)
                 : (BufferedInputStream)is;
-
+        
         boolean le = littleEndian(bufferedStream);
-//        boolean le =true;
+
         DataInput di = le ? new LEDataInputStream(bufferedStream)
                 : new DataInputStream(bufferedStream);
-
-        Nifti2Header ds = new Nifti2Header();
+        
+        Nifti1Header ds = new Nifti1Header();
         ds.filename = filename;
         ds.little_endian = le;
-
+        
         return readMain(di, ds);
     }
 
-    private static Nifti2Header readMain(DataInput di, Nifti2Header ds) throws IOException
+    private static Nifti1Header readMain(DataInput di, Nifti1Header ds) throws IOException
     {
         ds.sizeof_hdr = di.readInt();
 
-//        byte[] bb = new byte[10];
-        byte[] bb = new byte[8];
-        di.readFully(bb, 0, 8);
-        ds.magic = new StringBuffer(new String(bb));
-        ds.datatype = di.readShort();
-        ds.bitpix = di.readShort();
+        byte[] bb = new byte[10];
+        di.readFully(bb, 0, 10);
+        ds.data_type_string = new StringBuffer(new String(bb));
+
+        bb = new byte[18];
+        di.readFully(bb, 0, 18);
+        ds.db_name = new StringBuffer(new String(bb));
+        ds.extents = di.readInt();
+        ds.session_error = di.readShort();
+        ds.regular = new StringBuffer();
+        ds.regular.append((char) (di.readUnsignedByte()));
+        ds.dim_info = new StringBuffer();
+        ds.dim_info.append((char) (di.readUnsignedByte()));
+
+        int fps_dim = (int) ds.dim_info.charAt(0);
+        ds.freq_dim = (short) (fps_dim & 3);
+        ds.phase_dim = (short) ((fps_dim >>> 2) & 3);
+        ds.slice_dim = (short) ((fps_dim >>> 4) & 3);
+
         for (int i = 0; i < 8; i++)
-            ds.dim[i] = di.readLong();
+            ds.dim[i] = di.readShort();
         if (ds.dim[0] > 0)
             ds.dim[1] = ds.dim[1];
         if (ds.dim[0] > 1)
@@ -711,84 +708,87 @@ public class Nifti2Header extends NiftiHeader
             ds.dim[4] = ds.dim[4];
 
         for (int i = 0; i < 3; i++)
-            ds.intent[i] = di.readDouble();
+            ds.intent[i] = di.readFloat();
+
+        ds.intent_code = di.readShort();
+        ds.datatype = di.readShort();
+        ds.bitpix = di.readShort();
+        ds.slice_start = di.readShort();
+
         for (int i = 0; i < 8; i++)
-            ds.pixdim[i] = di.readDouble();
+            ds.pixdim[i] = di.readFloat();
+
         ds.qfac = (short) Math.floor((double) (ds.pixdim[0]));
-        ds.vox_offset = di.readLong();
-        ds.scl_slope = di.readDouble();
-        ds.scl_inter = di.readDouble();
-        ds.cal_max = di.readDouble();
-        ds.cal_min = di.readDouble();
-        ds.slice_duration = di.readDouble();
-        ds.toffset = di.readDouble();
-        ds.slice_start = di.readLong();
-        ds.slice_end = di.readLong();
-        bb = new byte[80];
-        di.readFully(bb, 0, 80);
-        ds.descrip = new StringBuffer(new String(bb));
-        bb = new byte[24];
-        di.readFully(bb, 0, 24);
-        ds.aux_file = new StringBuffer(new String(bb));
-        ds.qform_code = di.readInt();
-        ds.sform_code = di.readInt();
+        ds.vox_offset = di.readFloat();
+        ds.scl_slope = di.readFloat();
+        ds.scl_inter = di.readFloat();
+        ds.slice_end = di.readShort();
+        ds.slice_code = (byte) di.readUnsignedByte();
 
-        for (int i = 0; i < 3; i++)
-            ds.quatern[i] = di.readDouble();
-        for (int i = 0; i < 3; i++)
-            ds.qoffset[i] = di.readDouble();
+        ds.xyzt_units = (byte) di.readUnsignedByte();
 
-        for (int i = 0; i < 4; i++)
-            ds.srow_x[i] = di.readDouble();
-        for (int i = 0; i < 4; i++)
-            ds.srow_y[i] = di.readDouble();
-        for (int i = 0; i < 4; i++)
-            ds.srow_z[i] = di.readDouble();
-
-        ds.slice_code = di.readInt();
-
-
-
-
-        ds.xyzt_units = di.readInt();
-        ds.intent_code = di.readInt();
         int unit_codes = (int) ds.xyzt_units;
         ds.xyz_unit_code = (short) (unit_codes & 007);
         ds.t_unit_code = (short) (unit_codes & 070);
+
+        ds.cal_max = di.readFloat();
+        ds.cal_min = di.readFloat();
+        ds.slice_duration = di.readFloat();
+        ds.toffset = di.readFloat();
+        ds.glmax = di.readInt();
+        ds.glmin = di.readInt();
+
+        bb = new byte[80];
+        di.readFully(bb, 0, 80);
+        ds.descrip = new StringBuffer(new String(bb));
+
+        bb = new byte[24];
+        di.readFully(bb, 0, 24);
+        ds.aux_file = new StringBuffer(new String(bb));
+
+        ds.qform_code = di.readShort();
+        ds.sform_code = di.readShort();
+
+        for (int i = 0; i < 3; i++)
+            ds.quatern[i] = di.readFloat();
+        for (int i = 0; i < 3; i++)
+            ds.qoffset[i] = di.readFloat();
+
+        for (int i = 0; i < 4; i++)
+            ds.srow_x[i] = di.readFloat();
+        for (int i = 0; i < 4; i++)
+            ds.srow_y[i] = di.readFloat();
+        for (int i = 0; i < 4; i++)
+            ds.srow_z[i] = di.readFloat();
+
         bb = new byte[16];
         di.readFully(bb, 0, 16);
         ds.intent_name = new StringBuffer(new String(bb));
 
-        ds.dim_info = new StringBuffer();
-        ds.dim_info.append((char) (di.readUnsignedByte()));
-
-        int fps_dim = (int) ds.dim_info.charAt(0);
-        ds.freq_dim = (short) (fps_dim & 3);
-        ds.phase_dim = (short) ((fps_dim >>> 2) & 3);
-        ds.slice_dim = (short) ((fps_dim >>> 4) & 3);
-        bb = new byte[15];
-        di.readFully(bb, 0, 15);
+        bb = new byte[4];
+        di.readFully(bb, 0, 4);
+        ds.magic = new StringBuffer(new String(bb));
 
         di.readFully(ds.extension, 0, 4);
 
         if (ds.extension[0] != (byte) 0)
         {
-            int start_addr = Nifti2Header.ANZ_HDR_SIZE + 4;
+            int start_addr = Nifti1Header.ANZ_HDR_SIZE + 4;
 
-            while (start_addr < (long) ds.vox_offset)
+            while (start_addr < (int) ds.vox_offset)
             {
                 int[] size_code = new int[2];
                 size_code[0] = di.readInt();
                 size_code[1] = di.readInt();
 
-                int nb = size_code[0] - Nifti2Header.EXT_KEY_SIZE;
+                int nb = size_code[0] - Nifti1Header.EXT_KEY_SIZE;
                 byte[] eblob = new byte[nb];
                 di.readFully(eblob, 0, nb);
                 ds.extension_blobs.add(eblob);
                 ds.extensions_list.add(size_code);
                 start_addr += (size_code[0]);
 
-                if (start_addr > (long) ds.vox_offset)
+                if (start_addr > (int) ds.vox_offset)
                     throw new IOException("Error: Data  for extension " + (ds.extensions_list.size())
                             + " appears to overrun start of image data.");
             }
@@ -804,31 +804,31 @@ public class Nifti2Header extends NiftiHeader
 
         dout.writeInt(this.sizeof_hdr);
 
-//        if (this.data_type_string.length() >= 10)
-//        {
-//            dout.writeBytes(this.data_type_string.substring(0, 10));
-//        }
-//        else
-//        {
-//            dout.writeBytes(this.data_type_string.toString());
-//            for (int i = 0; i < (10 - this.data_type_string.length()); i++)
-//                dout.writeByte(0);
-//        }
-//
-//        if (this.db_name.length() >= 18)
-//        {
-//            dout.writeBytes(this.db_name.substring(0, 18));
-//        }
-//        else
-//        {
-//            dout.writeBytes(this.db_name.toString());
-//            for (int i = 0; i < (18 - this.db_name.length()); i++)
-//                dout.writeByte(0);
-//        }
-//
-//        dout.writeInt(this.extents);
-//        dout.writeShort(this.session_error);
-//        dout.writeByte((int) this.regular.charAt(0));
+        if (this.data_type_string.length() >= 10)
+        {
+            dout.writeBytes(this.data_type_string.substring(0, 10));
+        }
+        else
+        {
+            dout.writeBytes(this.data_type_string.toString());
+            for (int i = 0; i < (10 - this.data_type_string.length()); i++)
+                dout.writeByte(0);
+        }
+
+        if (this.db_name.length() >= 18)
+        {
+            dout.writeBytes(this.db_name.substring(0, 18));
+        }
+        else
+        {
+            dout.writeBytes(this.db_name.toString());
+            for (int i = 0; i < (18 - this.db_name.length()); i++)
+                dout.writeByte(0);
+        }
+
+        dout.writeInt(this.extents);
+        dout.writeShort(this.session_error);
+        dout.writeByte((int) this.regular.charAt(0));
 
         int spf_dims = 0;
         spf_dims = (spf_dims & ((int) (this.slice_dim) & 3)) << 2;
@@ -838,51 +838,51 @@ public class Nifti2Header extends NiftiHeader
         dout.writeByte((int) b);
 
         for (int i = 0; i < 8; i++)
-            dout.writeLong(this.dim[i]);
+            dout.writeShort(this.dim[i]);
 
         for (int i = 0; i < 3; i++)
-            dout.writeDouble(this.intent[i]);
+            dout.writeFloat(this.intent[i]);
 
         dout.writeShort(this.intent_code);
         dout.writeShort(this.datatype);
         dout.writeShort(this.bitpix);
-        dout.writeLong(this.slice_start);
+        dout.writeShort(this.slice_start);
 
         for (int i = 0; i < 8; i++)
-            dout.writeDouble(this.pixdim[i]);
+            dout.writeFloat(this.pixdim[i]);
 
-        dout.writeLong(this.vox_offset);
-        dout.writeDouble(this.scl_slope);
-        dout.writeDouble(this.scl_inter);
-        dout.writeLong(this.slice_end);
+        dout.writeFloat(this.vox_offset);
+        dout.writeFloat(this.scl_slope);
+        dout.writeFloat(this.scl_inter);
+        dout.writeShort(this.slice_end);
         dout.writeByte((int) this.slice_code);
 
         int units = ((byte) (((int) (this.xyz_unit_code) & 007) | ((int) (this.t_unit_code) & 070)));
         dout.writeByte(units);
-        dout.writeDouble(this.cal_max);
-        dout.writeDouble(this.cal_min);
-        dout.writeDouble(this.slice_duration);
-        dout.writeDouble(this.toffset);
-//        dout.writeInt(this.glmax);
-//        dout.writeInt(this.glmin);
-        dout.write(Nifti2Header.setStringSize(this.descrip, 80), 0, 80);
-        dout.write(Nifti2Header.setStringSize(this.aux_file, 24), 0, 24);
-        dout.writeInt(this.qform_code);
-        dout.writeInt(this.sform_code);
+        dout.writeFloat(this.cal_max);
+        dout.writeFloat(this.cal_min);
+        dout.writeFloat(this.slice_duration);
+        dout.writeFloat(this.toffset);
+        dout.writeInt(this.glmax);
+        dout.writeInt(this.glmin);
+        dout.write(Nifti1Header.setStringSize(this.descrip, 80), 0, 80);
+        dout.write(Nifti1Header.setStringSize(this.aux_file, 24), 0, 24);
+        dout.writeShort(this.qform_code);
+        dout.writeShort(this.sform_code);
 
         for (int i = 0; i < 3; i++)
-            dout.writeDouble(this.quatern[i]);
+            dout.writeFloat(this.quatern[i]);
         for (int i = 0; i < 3; i++)
-            dout.writeDouble(this.qoffset[i]);
+            dout.writeFloat(this.qoffset[i]);
         for (int i = 0; i < 4; i++)
-            dout.writeDouble(this.srow_x[i]);
+            dout.writeFloat(this.srow_x[i]);
         for (int i = 0; i < 4; i++)
-            dout.writeDouble(this.srow_y[i]);
+            dout.writeFloat(this.srow_y[i]);
         for (int i = 0; i < 4; i++)
-            dout.writeDouble(this.srow_z[i]);
+            dout.writeFloat(this.srow_z[i]);
 
-        dout.write(Nifti2Header.setStringSize(this.intent_name, 16), 0, 16);
-        dout.write(Nifti2Header.setStringSize(this.magic, 8), 0, 8);
+        dout.write(Nifti1Header.setStringSize(this.intent_name, 16), 0, 16);
+        dout.write(Nifti1Header.setStringSize(this.magic, 4), 0, 4);
 
         if (this.extension[0] != 0)
         {
@@ -1062,7 +1062,7 @@ public class Nifti2Header extends NiftiHeader
                                 P[1][j - 1] = q;
                                 P[2][k - 1] = r;
                                 detP = det33(P); // permutation
-                                // sign
+                                                 // sign
                                 if (detP * detQ <= 0.0)
                                     continue; /* doesn't match sign of Q */
                                 M = mult(P, Q);
@@ -1096,84 +1096,84 @@ public class Nifti2Header extends NiftiHeader
 
         /*
          * At this point ibest is 1 or 2 or 3; pbest is -1 or +1; etc.
-         *
+         * 
          * The matrix P that corresponds is the best permutation approximation
          * to Q-inverse; that is, P (approximately) takes (x,y,z) coordinates to
          * the (i,j,k) axes.
-         *
+         * 
          * For example, the first row of P (which contains pbest in column
          * ibest) determines the way the i axis points relative to the
          * anatomical (x,y,z) axes. If ibest is 2, then the i axis is along the
          * y axis, which is direction P2A (if pbest > 0) or A2P (if pbest < 0).
-         *
+         * 
          * So, using ibest and pbest, we can assign the output code for the i
          * axis. Mutatis mutandis for the j and k axes, of course.
          */
 
         switch (ibest * pbest)
         {
-            case 1:
-                i = NIFTI_L2R;
-                break;
-            case -1:
-                i = NIFTI_R2L;
-                break;
-            case 2:
-                i = NIFTI_P2A;
-                break;
-            case -2:
-                i = NIFTI_A2P;
-                break;
-            case 3:
-                i = NIFTI_I2S;
-                break;
-            case -3:
-                i = NIFTI_S2I;
-                break;
+        case 1:
+            i = NIFTI_L2R;
+            break;
+        case -1:
+            i = NIFTI_R2L;
+            break;
+        case 2:
+            i = NIFTI_P2A;
+            break;
+        case -2:
+            i = NIFTI_A2P;
+            break;
+        case 3:
+            i = NIFTI_I2S;
+            break;
+        case -3:
+            i = NIFTI_S2I;
+            break;
         }
 
         switch (jbest * qbest)
         {
-            case 1:
-                j = NIFTI_L2R;
-                break;
-            case -1:
-                j = NIFTI_R2L;
-                break;
-            case 2:
-                j = NIFTI_P2A;
-                break;
-            case -2:
-                j = NIFTI_A2P;
-                break;
-            case 3:
-                j = NIFTI_I2S;
-                break;
-            case -3:
-                j = NIFTI_S2I;
-                break;
+        case 1:
+            j = NIFTI_L2R;
+            break;
+        case -1:
+            j = NIFTI_R2L;
+            break;
+        case 2:
+            j = NIFTI_P2A;
+            break;
+        case -2:
+            j = NIFTI_A2P;
+            break;
+        case 3:
+            j = NIFTI_I2S;
+            break;
+        case -3:
+            j = NIFTI_S2I;
+            break;
         }
 
         switch (kbest * rbest)
         {
-            case 1:
-                k = NIFTI_L2R;
-                break;
-            case -1:
-                k = NIFTI_R2L;
-                break;
-            case 2:
-                k = NIFTI_P2A;
-                break;
-            case -2:
-                k = NIFTI_A2P;
-                break;
-            case 3:
-                k = NIFTI_I2S;
-                break;
-            case -3:
-                k = NIFTI_S2I;
-                break;
+        case 1:
+            k = NIFTI_L2R;
+            break;
+        case -1:
+            k = NIFTI_R2L;
+            break;
+        case 2:
+            k = NIFTI_P2A;
+            break;
+        case -2:
+            k = NIFTI_A2P;
+            break;
+        case 3:
+            k = NIFTI_I2S;
+            break;
+        case -3:
+            k = NIFTI_S2I;
+            break;
         }
 
         return NIFTI_ORIENT[i - 1] + NIFTI_ORIENT[j - 1] + NIFTI_ORIENT[k - 1];
@@ -1249,7 +1249,7 @@ public class Nifti2Header extends NiftiHeader
         double qfac = this.qfac;
 
         double[][] R = new double[4][4];
-
+        
         /* last row is always [ 0 0 0 1 ] */
         R[3][0] = R[3][1] = R[3][2] = 0.0;
         R[3][3] = 1.0;
@@ -1307,11 +1307,11 @@ public class Nifti2Header extends NiftiHeader
 
         for (int i = 0; i < 4; i++)
         {
-            this.srow_x[i] = (double) mat44[0][i];
-            this.srow_y[i] = (double) mat44[1][i];
-            this.srow_z[i] = (double) mat44[2][i];
+            this.srow_x[i] = (float) mat44[0][i];
+            this.srow_y[i] = (float) mat44[1][i];
+            this.srow_z[i] = (float) mat44[2][i];
         }
-
+        
         this.sform_code = 1;
     }
 

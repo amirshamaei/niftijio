@@ -27,14 +27,33 @@ public class NiftiVolume
 //        this.data = new NDimensionalArray(dims);
 //    }
 
-
-
-    public NiftiVolume(NiftiHeader hdr)
+    public NiftiVolume(Nifti2Header hdr)
     {
         this.header = hdr;
         int[] dims = new int[7];
 
-        if (hdr.datatype == NiftiHeader.NIFTI_TYPE_COMPLEX64 || hdr.datatype == NiftiHeader.NIFTI_TYPE_COMPLEX128) {
+        if (hdr.datatype == Nifti1Header.NIFTI_TYPE_COMPLEX64 || hdr.datatype == Nifti1Header.NIFTI_TYPE_COMPLEX128) {
+            dims[0] = (int) (hdr.dim[1]*2);
+        } else {
+            dims[0] = (int) hdr.dim[1];
+        }
+
+        for (int i = 2; i < 8; i++) {
+            dims[i-1] = (int) hdr.dim[i];
+            if (dims[i-1] == 0)
+                dims[i-1] = 1;
+        }
+
+        this.data = new NDimensionalArray(dims);
+
+    }
+
+    public NiftiVolume(Nifti1Header hdr)
+    {
+        this.header = hdr;
+        int[] dims = new int[7];
+
+        if (hdr.datatype == Nifti1Header.NIFTI_TYPE_COMPLEX64 || hdr.datatype == Nifti1Header.NIFTI_TYPE_COMPLEX128) {
             dims[0] = hdr.dim[1]*2;
         } else {
             dims[0] = hdr.dim[1];
@@ -58,21 +77,54 @@ public class NiftiVolume
         final int ny = data[0].length;
         final int nz = data[0][0].length;
         final int dim = data[0][0][0].length;
-        this.header = new NiftiHeader(nx, ny, nz, dim);
+        this.header = new Nifti1Header(nx, ny, nz, dim);
     }
 
     public static NiftiVolume read(String filename) throws IOException {
-        NiftiHeader hdr = NiftiHeader.read(filename);
 
-        InputStream is = new FileInputStream(hdr.filename);
-        if (hdr.filename.endsWith(".gz"))
-            is = new GZIPInputStream(is);
+        boolean v = true;
         try {
-            return read(new BufferedInputStream(is), hdr);
-        } finally {
-            is.close();
+            Nifti1Header hdr = Nifti1Header.read(filename);
+            if (hdr.sizeof_hdr != 348) {
+                v = false;
+            } else if (hdr.sizeof_hdr == 348) {
+                InputStream is = new FileInputStream(hdr.filename);
+                if (hdr.filename.endsWith(".gz"))
+                    is = new GZIPInputStream(is);
+                try {
+                    return read(new BufferedInputStream(is), hdr);
+                } finally {
+                    is.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        if (!v) {
+            try {
+                Nifti2Header hdr = Nifti2Header.read(filename);
+                if (hdr.sizeof_hdr != 540) {
+                    v = true;
+                } else if (hdr.sizeof_hdr == 540) {
+                    InputStream is = new FileInputStream(hdr.filename);
+                    if (hdr.filename.endsWith(".gz"))
+                        is = new GZIPInputStream(is);
+                    try {
+                        return read(new BufferedInputStream(is), hdr);
+                    } finally {
+                        is.close();
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        return null;
     }
+
+
 
     /** Read the NIFTI volume from a NIFTI input stream.
      *
@@ -95,20 +147,110 @@ public class NiftiVolume
         BufferedInputStream bis = new BufferedInputStream(is);
         try {
             bis.mark(2048);
-            NiftiHeader hdr = NiftiHeader.read(bis, filename);
+            Nifti1Header hdr = Nifti1Header.read(bis, filename);
             bis.reset();
             return read(bis, hdr);
         } finally {
             bis.close();
         }
     }
-
-    private static NiftiVolume read(BufferedInputStream is, NiftiHeader hdr) throws IOException {
+    private static NiftiVolume read(BufferedInputStream is, Nifti2Header hdr) throws IOException {
         // skip header
         is.skip((long) hdr.vox_offset);
         int[] dims = new int[7];
 
-        if (hdr.datatype == NiftiHeader.NIFTI_TYPE_COMPLEX64 || hdr.datatype == NiftiHeader.NIFTI_TYPE_COMPLEX128) {
+        if (hdr.datatype == Nifti2Header.NIFTI_TYPE_COMPLEX64 || hdr.datatype == Nifti2Header.NIFTI_TYPE_COMPLEX128) {
+            dims[0] = (int) (hdr.dim[1]*2);
+        } else {
+            dims[0] = (int) hdr.dim[1];
+        }
+
+        for (int i = 2; i < 8; i++) {
+            dims[i-1] = (int) hdr.dim[i];
+            if (dims[i-1] == 0)
+                dims[i-1] = 1;
+        }
+
+        NiftiVolume out = new NiftiVolume(hdr);
+        DataInput di = hdr.little_endian ? new LEDataInputStream(is) : new DataInputStream(is);
+
+        double v;
+        ArrayList<int[]> idcs = new IndexIterator().iterateReverse(dims);
+        for (int[] idc:idcs)  {
+            switch (hdr.datatype) {
+                case Nifti2Header.NIFTI_TYPE_INT8:
+                case Nifti2Header.NIFTI_TYPE_UINT8:
+                    v = di.readByte();
+
+                    if ((hdr.datatype == Nifti2Header.NIFTI_TYPE_UINT8) && v < 0)
+                        v = v + 256d;
+                    if (hdr.scl_slope != 0)
+                        v = v * hdr.scl_slope + hdr.scl_inter;
+                    break;
+                case Nifti2Header.NIFTI_TYPE_INT16:
+                case Nifti2Header.NIFTI_TYPE_UINT16:
+                    v = (double) (di.readShort());
+
+                    if ((hdr.datatype == Nifti2Header.NIFTI_TYPE_UINT16) && (v < 0))
+                        v = Math.abs(v) + (double) (1 << 15);
+                    if (hdr.scl_slope != 0)
+                        v = v * hdr.scl_slope + hdr.scl_inter;
+                    break;
+                case Nifti2Header.NIFTI_TYPE_INT32:
+                case Nifti2Header.NIFTI_TYPE_UINT32:
+                    v = (double) (di.readInt());
+                    if ((hdr.datatype == Nifti2Header.NIFTI_TYPE_UINT32) && (v < 0))
+                        v = Math.abs(v) + (double) (1 << 31);
+                    if (hdr.scl_slope != 0)
+                        v = v * hdr.scl_slope + hdr.scl_inter;
+                    break;
+                case Nifti2Header.NIFTI_TYPE_INT64:
+                case Nifti2Header.NIFTI_TYPE_UINT64:
+                    v = (double) (di.readLong());
+                    if ((hdr.datatype == Nifti2Header.NIFTI_TYPE_UINT64) && (v < 0))
+                        v = Math.abs(v) + (double) (1 << 63);
+                    if (hdr.scl_slope != 0)
+                        v = v * hdr.scl_slope + hdr.scl_inter;
+                    break;
+                case Nifti2Header.NIFTI_TYPE_FLOAT32:
+                    v = (double) (di.readFloat());
+                    if (hdr.scl_slope != 0)
+                        v = v * hdr.scl_slope + hdr.scl_inter;
+                    break;
+                case Nifti2Header.NIFTI_TYPE_FLOAT64:
+                    v = (double) (di.readDouble());
+                    if (hdr.scl_slope != 0)
+                        v = v * hdr.scl_slope + hdr.scl_inter;
+                    break;
+                case Nifti2Header.NIFTI_TYPE_COMPLEX64:
+                    v = (double) (di.readFloat());
+                    if (hdr.scl_slope != 0)
+                        v = v * hdr.scl_slope + hdr.scl_inter;
+                    break;
+                case Nifti2Header.DT_NONE:
+                case Nifti2Header.DT_BINARY:
+                case Nifti2Header.NIFTI_TYPE_FLOAT128:
+                case Nifti2Header.NIFTI_TYPE_RGB24:
+                case Nifti2Header.NIFTI_TYPE_COMPLEX128:
+                    v = (double) (di.readDouble());
+                    if (hdr.scl_slope != 0)
+                        v = v * hdr.scl_slope + hdr.scl_inter;
+                    break;
+                case Nifti2Header.NIFTI_TYPE_COMPLEX256:
+                case Nifti2Header.DT_ALL:
+                default:
+                    throw new IOException("Sorry, cannot yet read nifti-1 datatype " + Nifti2Header.decodeDatatype(hdr.datatype));
+            }
+            out.data.set(idc,v);
+        }
+        return out;
+    }
+    private static NiftiVolume read(BufferedInputStream is, Nifti1Header hdr) throws IOException {
+        // skip header
+        is.skip((long) hdr.vox_offset);
+        int[] dims = new int[7];
+
+        if (hdr.datatype == Nifti1Header.NIFTI_TYPE_COMPLEX64 || hdr.datatype == Nifti1Header.NIFTI_TYPE_COMPLEX128) {
             dims[0] = hdr.dim[1]*2;
         } else {
             dims[0] = hdr.dim[1];
@@ -127,68 +269,68 @@ public class NiftiVolume
         ArrayList<int[]> idcs = new IndexIterator().iterateReverse(dims);
             for (int[] idc:idcs)  {
                 switch (hdr.datatype) {
-                    case NiftiHeader.NIFTI_TYPE_INT8:
-                    case NiftiHeader.NIFTI_TYPE_UINT8:
+                    case Nifti1Header.NIFTI_TYPE_INT8:
+                    case Nifti1Header.NIFTI_TYPE_UINT8:
                         v = di.readByte();
 
-                        if ((hdr.datatype == NiftiHeader.NIFTI_TYPE_UINT8) && v < 0)
+                        if ((hdr.datatype == Nifti1Header.NIFTI_TYPE_UINT8) && v < 0)
                             v = v + 256d;
                         if (hdr.scl_slope != 0)
                             v = v * hdr.scl_slope + hdr.scl_inter;
                         break;
-                    case NiftiHeader.NIFTI_TYPE_INT16:
-                    case NiftiHeader.NIFTI_TYPE_UINT16:
+                    case Nifti1Header.NIFTI_TYPE_INT16:
+                    case Nifti1Header.NIFTI_TYPE_UINT16:
                         v = (double) (di.readShort());
 
-                        if ((hdr.datatype == NiftiHeader.NIFTI_TYPE_UINT16) && (v < 0))
+                        if ((hdr.datatype == Nifti1Header.NIFTI_TYPE_UINT16) && (v < 0))
                             v = Math.abs(v) + (double) (1 << 15);
                         if (hdr.scl_slope != 0)
                             v = v * hdr.scl_slope + hdr.scl_inter;
                         break;
-                    case NiftiHeader.NIFTI_TYPE_INT32:
-                    case NiftiHeader.NIFTI_TYPE_UINT32:
+                    case Nifti1Header.NIFTI_TYPE_INT32:
+                    case Nifti1Header.NIFTI_TYPE_UINT32:
                         v = (double) (di.readInt());
-                        if ((hdr.datatype == NiftiHeader.NIFTI_TYPE_UINT32) && (v < 0))
+                        if ((hdr.datatype == Nifti1Header.NIFTI_TYPE_UINT32) && (v < 0))
                             v = Math.abs(v) + (double) (1 << 31);
                         if (hdr.scl_slope != 0)
                             v = v * hdr.scl_slope + hdr.scl_inter;
                         break;
-                    case NiftiHeader.NIFTI_TYPE_INT64:
-                    case NiftiHeader.NIFTI_TYPE_UINT64:
+                    case Nifti1Header.NIFTI_TYPE_INT64:
+                    case Nifti1Header.NIFTI_TYPE_UINT64:
                         v = (double) (di.readLong());
-                        if ((hdr.datatype == NiftiHeader.NIFTI_TYPE_UINT64) && (v < 0))
+                        if ((hdr.datatype == Nifti1Header.NIFTI_TYPE_UINT64) && (v < 0))
                             v = Math.abs(v) + (double) (1 << 63);
                         if (hdr.scl_slope != 0)
                             v = v * hdr.scl_slope + hdr.scl_inter;
                         break;
-                    case NiftiHeader.NIFTI_TYPE_FLOAT32:
+                    case Nifti1Header.NIFTI_TYPE_FLOAT32:
                         v = (double) (di.readFloat());
                         if (hdr.scl_slope != 0)
                             v = v * hdr.scl_slope + hdr.scl_inter;
                         break;
-                    case NiftiHeader.NIFTI_TYPE_FLOAT64:
+                    case Nifti1Header.NIFTI_TYPE_FLOAT64:
                         v = (double) (di.readDouble());
                         if (hdr.scl_slope != 0)
                             v = v * hdr.scl_slope + hdr.scl_inter;
                         break;
-                    case NiftiHeader.NIFTI_TYPE_COMPLEX64:
+                    case Nifti1Header.NIFTI_TYPE_COMPLEX64:
                         v = (double) (di.readFloat());
                         if (hdr.scl_slope != 0)
                             v = v * hdr.scl_slope + hdr.scl_inter;
                         break;
-                    case NiftiHeader.DT_NONE:
-                    case NiftiHeader.DT_BINARY:
-                    case NiftiHeader.NIFTI_TYPE_FLOAT128:
-                    case NiftiHeader.NIFTI_TYPE_RGB24:
-                    case NiftiHeader.NIFTI_TYPE_COMPLEX128:
+                    case Nifti1Header.DT_NONE:
+                    case Nifti1Header.DT_BINARY:
+                    case Nifti1Header.NIFTI_TYPE_FLOAT128:
+                    case Nifti1Header.NIFTI_TYPE_RGB24:
+                    case Nifti1Header.NIFTI_TYPE_COMPLEX128:
                         v = (double) (di.readDouble());
                         if (hdr.scl_slope != 0)
                             v = v * hdr.scl_slope + hdr.scl_inter;
                         break;
-                    case NiftiHeader.NIFTI_TYPE_COMPLEX256:
-                    case NiftiHeader.DT_ALL:
+                    case Nifti1Header.NIFTI_TYPE_COMPLEX256:
+                    case Nifti1Header.DT_ALL:
                     default:
-                        throw new IOException("Sorry, cannot yet read nifti-1 datatype " + NiftiHeader.decodeDatatype(hdr.datatype));
+                        throw new IOException("Sorry, cannot yet read nifti-1 datatype " + Nifti1Header.decodeDatatype(hdr.datatype));
                 }
                 out.data.set(idc,v);
             }
@@ -197,12 +339,12 @@ public class NiftiVolume
 
     public void write(String filename) throws IOException
     {
-        NiftiHeader hdr = this.header;
+        Nifti1Header hdr = (Nifti1Header) this.header;
         hdr.filename = filename;
 
         int[] dims = new int[7];
 
-        if (hdr.datatype == NiftiHeader.NIFTI_TYPE_COMPLEX64 || hdr.datatype == NiftiHeader.NIFTI_TYPE_COMPLEX128) {
+        if (hdr.datatype == Nifti1Header.NIFTI_TYPE_COMPLEX64 || hdr.datatype == Nifti1Header.NIFTI_TYPE_COMPLEX128) {
             dims[0] = hdr.dim[1]*2;
         } else {
             dims[0] = hdr.dim[1];
@@ -230,66 +372,66 @@ public class NiftiVolume
             for (int[] idc:idcs)  {
                             double v = this.data.get(idc);
                             switch (hdr.datatype) {
-                                case NiftiHeader.NIFTI_TYPE_INT8:
-                                case NiftiHeader.NIFTI_TYPE_UINT8:
+                                case Nifti1Header.NIFTI_TYPE_INT8:
+                                case Nifti1Header.NIFTI_TYPE_UINT8:
                                     if (hdr.scl_slope == 0)
                                         dout.writeByte((int) v);
                                     else
                                         dout.writeByte((int) ((v - hdr.scl_inter) / hdr.scl_slope));
                                     break;
-                                case NiftiHeader.NIFTI_TYPE_INT16:
-                                case NiftiHeader.NIFTI_TYPE_UINT16:
+                                case Nifti1Header.NIFTI_TYPE_INT16:
+                                case Nifti1Header.NIFTI_TYPE_UINT16:
                                     if (hdr.scl_slope == 0)
                                         dout.writeShort((short) (v));
                                     else
                                         dout.writeShort((short) ((v - hdr.scl_inter) / hdr.scl_slope));
                                     break;
-                                case NiftiHeader.NIFTI_TYPE_INT32:
-                                case NiftiHeader.NIFTI_TYPE_UINT32:
+                                case Nifti1Header.NIFTI_TYPE_INT32:
+                                case Nifti1Header.NIFTI_TYPE_UINT32:
                                     if (hdr.scl_slope == 0)
                                         dout.writeInt((int) (v));
                                     else
                                         dout.writeInt((int) ((v - hdr.scl_inter) / hdr.scl_slope));
                                     break;
-                                case NiftiHeader.NIFTI_TYPE_INT64:
-                                case NiftiHeader.NIFTI_TYPE_UINT64:
+                                case Nifti1Header.NIFTI_TYPE_INT64:
+                                case Nifti1Header.NIFTI_TYPE_UINT64:
                                     if (hdr.scl_slope == 0)
                                         dout.writeLong((long) Math.rint(v));
                                     else
                                         dout.writeLong((long) Math.rint((v - hdr.scl_inter) / hdr.scl_slope));
                                     break;
-                                case NiftiHeader.NIFTI_TYPE_FLOAT32:
+                                case Nifti1Header.NIFTI_TYPE_FLOAT32:
                                     if (hdr.scl_slope == 0)
                                         dout.writeFloat((float) (v));
                                     else
                                         dout.writeFloat((float) ((v - hdr.scl_inter) / hdr.scl_slope));
                                     break;
-                                case NiftiHeader.NIFTI_TYPE_FLOAT64:
+                                case Nifti1Header.NIFTI_TYPE_FLOAT64:
                                     if (hdr.scl_slope == 0)
                                         dout.writeDouble(v);
                                     else
                                         dout.writeDouble((v - hdr.scl_inter) / hdr.scl_slope);
                                     break;
-                                case NiftiHeader.DT_NONE:
-                                case NiftiHeader.DT_BINARY:
-                                case NiftiHeader.NIFTI_TYPE_COMPLEX64:
+                                case Nifti1Header.DT_NONE:
+                                case Nifti1Header.DT_BINARY:
+                                case Nifti1Header.NIFTI_TYPE_COMPLEX64:
                                     if (hdr.scl_slope == 0)
                                         dout.writeFloat((float) v);
                                     else
                                         dout.writeFloat((float) ((v - hdr.scl_inter) / hdr.scl_slope));
                                     break;
-                                case NiftiHeader.NIFTI_TYPE_FLOAT128:
-                                case NiftiHeader.NIFTI_TYPE_RGB24:
-                                case NiftiHeader.NIFTI_TYPE_COMPLEX128:
+                                case Nifti1Header.NIFTI_TYPE_FLOAT128:
+                                case Nifti1Header.NIFTI_TYPE_RGB24:
+                                case Nifti1Header.NIFTI_TYPE_COMPLEX128:
                                     if (hdr.scl_slope == 0)
                                         dout.writeDouble((double) v);
                                     else
                                         dout.writeDouble((double) ((v - hdr.scl_inter) / hdr.scl_slope));
                                     break;
-                                case NiftiHeader.NIFTI_TYPE_COMPLEX256:
-                                case NiftiHeader.DT_ALL:
+                                case Nifti1Header.NIFTI_TYPE_COMPLEX256:
+                                case Nifti1Header.DT_ALL:
                                 default:
-                                    throw new IOException("Sorry, cannot yet write nifti-1 datatype " + NiftiHeader.decodeDatatype(hdr.datatype));
+                                    throw new IOException("Sorry, cannot yet write nifti-1 datatype " + Nifti1Header.decodeDatatype(hdr.datatype));
 
                             }
                         }
