@@ -13,12 +13,12 @@ public class testNDarray {
 //        Files.copy(inputStream, Paths.get(System.getProperty("user.dir") + "/filtered_func_data.nii.gz"), StandardCopyOption.REPLACE_EXISTING);
         NiftiVolume niftiVolume = NiftiVolume.read(System.getProperty("user.dir") + "/filtered_func_data.nii.gz");
 
-        ArrayList<int[]> indcs = new IndexIterator().iterateReverse(niftiVolume.data.getDims());
+        ArrayList<int[]> indcs = new IndexIterator().iterateReverse(niftiVolume.getData().getDims());
 //        niftiVolume.header.datatype = 64;
-        NiftiVolume newNiftiVolume = new NiftiVolume((Nifti1Header) niftiVolume.header);
+        NiftiVolume newNiftiVolume = new NiftiVolume((Nifti1Header) niftiVolume.getHeader1());
         for (int[] indc: indcs
              ) {
-            newNiftiVolume.data.set(indc, niftiVolume.data.get(indc));
+            newNiftiVolume.getData().set(indc, niftiVolume.getData().get(indc));
         }
         newNiftiVolume.write(System.getProperty("user.dir") + "/NewFiltered_func_data.nii.gz");
     }
